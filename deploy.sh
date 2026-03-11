@@ -5,14 +5,18 @@ cd "$(dirname "$0")"
 
 source .secrets
 
+# Extract account name and convert underscores to hyphens for registry
+ACCOUNT_NAME=$(echo $SNOWFLAKE_HOST | sed 's/.snowflakecomputing.com//' | tr '_' '-')
+REGISTRY_URL="${ACCOUNT_NAME}.registry.snowflakecomputing.com"
+
 echo "Building Docker image..."
-docker build --platform linux/amd64 -t sfseeurope-demo-mdaeppen.registry.snowflakecomputing.com/r_spcs_db/public/rstudio_repo/rstudio-spcs:latest .
+docker build --platform linux/amd64 -t ${REGISTRY_URL}/r_spcs_db/public/rstudio_repo/rstudio-spcs:latest .
 
 echo "Logging into Snowflake registry..."
 snow spcs image-registry login --connection sfseeurope-mdaeppen
 
 echo "Pushing image..."
-docker push sfseeurope-demo-mdaeppen.registry.snowflakecomputing.com/r_spcs_db/public/rstudio_repo/rstudio-spcs:latest
+docker push ${REGISTRY_URL}/r_spcs_db/public/rstudio_repo/rstudio-spcs:latest
 
 echo "Updating service..."
 snow sql --connection sfseeurope-mdaeppen -q "
@@ -25,6 +29,8 @@ spec:
     env:
       DISABLE_AUTH: \"true\"
       SNOWFLAKE_TOKEN: \"${SNOWFLAKE_TOKEN}\"
+      SNOWFLAKE_HOST: \"${SNOWFLAKE_HOST}\"
+      SNOWFLAKE_USER: \"${SNOWFLAKE_USER}\"
     resources:
       requests:
         memory: 2Gi
@@ -42,4 +48,4 @@ spec:
   \$\$
 "
 
-echo "Done! Endpoint: https://icvycc-sfseeurope-demo-mdaeppen.snowflakecomputing.app"
+echo "Done! Get endpoint with: SHOW ENDPOINTS IN SERVICE R_SPCS_DB.PUBLIC.RSTUDIO_SERVICE;"

@@ -30,9 +30,11 @@ This project deploys RStudio Server as a containerized service on Snowpark Conta
    source 02_create_sample_data.sql
    ```
 
-2. Create `.secrets` file with your token:
+2. Create `.secrets` file with your credentials:
    ```
    SNOWFLAKE_TOKEN=<your_programmatic_access_token>
+   SNOWFLAKE_HOST=<your_account>.snowflakecomputing.com
+   SNOWFLAKE_USER=<your_username>
    ```
 
 3. Deploy:

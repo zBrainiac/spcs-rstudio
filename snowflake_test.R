@@ -4,12 +4,14 @@ library(dplyr)
 
 # -- 1. Connect to Snowflake ------------------------------------------------
 token <- Sys.getenv("SNOWFLAKE_TOKEN")
+host <- Sys.getenv("SNOWFLAKE_HOST")
+user <- Sys.getenv("SNOWFLAKE_USER")
 
 con <- dbConnect(
   odbc::odbc(),
   Driver        = "SnowflakeDSIIDriver",
-  Server        = "sfseeurope-demo_mdaeppen.snowflakecomputing.com",
-  UID           = "mdaeppen",
+  Server        = host,
+  UID           = user,
   TOKEN         = token,
   Authenticator = "programmatic_access_token",
   Database      = "R_SPCS_DB",
